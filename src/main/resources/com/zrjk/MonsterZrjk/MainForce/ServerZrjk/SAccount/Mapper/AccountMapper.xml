@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SAccount.Mapper.AccountMapper">
+
+
+    <resultMap id="power" type="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SAccount.Beans.AccountPower">
+        <result property="name" column="pfurl"></result>
+        <result property="meta.title" column="pfname"></result>
+        <collection property="childrens" ofType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SAccount.Beans.Children">
+            <result property="component" column="furl"></result>
+            <result property="path" column="furl"></result>
+            <result property="name" column="furl"></result>
+            <result property="meta.title" column="fname"></result>
+            <collection property="buttonAlias" javaType="ArrayList" ofType="String">
+                <result column="balias"></result>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <resultMap id="accounts" type="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SAccount.Beans.Account">
+        <result property="id" column="id"></result>
+        <result property="username" column="username"></result>
+        <result property="trueName" column="true_name"></result>
+        <result property="phoneNum" column="phone_num"></result>
+        <result property="createdTime" column="created_time"></result>
+        <result property="roleId" column="role_id"></result>
+        <association property="roleName"  javaType="String">
+                <result column="role_name"></result>
+        </association>
+    </resultMap>
+
+    <resultMap id="functionss" type="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SAccount.Beans.ParentFunction">
+        <result property="pfName" column="pfName"></result>
+        <collection property="functions" ofType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SAccount.Beans.Function">
+            <result property="id" column="fid"></result>
+            <result property="functionName" column="fname"></result>
+            <result property="createdTime" column="fcreatedtime"></result>
+            <collection property="buttons" ofType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SAccount.Beans.Button">
+                            <result property="id" column="bid"></result>
+                            <result property="name" column="bname"></result>
+                            <result property="alias" column="balias"></result>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <resultMap id="roles" type="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SAccount.Beans.Role">
+        <id property="id" column="rid"></id>
+        <result property="roleName" column="rname"></result>
+        <result property="createdTime" column="rcreatedtime"></result>
+        <collection property="parentFunctions" ofType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SAccount.Beans.ParentFunction" column="rid" select="findFunctionByRoleId" javaType="java.util.ArrayList">
+        </collection>
+    </resultMap>
+    <resultMap id="parentFunctions" type="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SAccount.Beans.ParentFunction">
+        <result property="pfName" column="pfname"/>
+        <collection property="functions" ofType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SAccount.Beans.Function">
+            <result property="id" column="fid"></result>
+            <result property="functionName" column="fname"></result>
+            <result property="createdTime" column="fcreatedtime"></result>
+            <collection property="buttons" ofType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SAccount.Beans.Button">
+                <result property="id" column="bid"></result>
+                <result property="name" column="bname"></result>
+                <result property="alias" column="balias"></result>
+            </collection>
+        </collection>
+    </resultMap>
+
+
+    <insert id="addAccount"
+            parameterType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SAccount.Beans.Account">
+        insert into server_user(id, username,password, true_name, phone_num, role_id, created_time) values (#{id},#{username},#{password},#{trueName},#{phoneNum},#{roleId},#{createdTime})
+    </insert>
+    <insert id="addAccountButton">
+        insert into server_user_button(user_id, button_id) values
+        <foreach collection="buttonIds" item="bid" separator=",">
+            (#{id},#{bid})
+        </foreach>
+    </insert>
+    <insert id="addAccountFunction">
+        insert into server_user_function(user_id, function_id) values <foreach collection="functionIds" item="fid" separator=",">
+        (#{id},#{fid})
+    </foreach>
+    </insert>
+    <insert id="addRole"
+            parameterType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SAccount.Beans.Role">
+        insert into server_role (id, role_name, created_time) values (#{role.id},#{role.roleName},#{role.createdTime})
+    </insert>
+    <insert id="addRoleFunction">
+            insert into server_role_function (role_id, function_id) values
+            <foreach collection="functionIds" item="fid" separator=",">
+                (#{id},#{fid})
+            </foreach>
+    </insert>
+    <insert id="addRoleButton">
+        insert into server_role_button(role_id, button_id) values <foreach collection="buttonIds" item="bid" separator=",">
+        (#{id},#{bid})
+    </foreach>
+     </insert>
+    <update id="updateAccount">
+        update server_user set true_name=#{account.trueName},phone_num=#{account.phoneNum},role_id=#{account.roleId} where id=#{account.id}
+    </update>
+    <update id="updateRoleNameById">
+        update server_role set role_name=#{rname} where id=#{rid}
+    </update>
+    <update id="updateAccountStatus">
+        update server_user set status=#{status} where id=#{uid}
+    </update>
+    <update id="updateRoleStatus">
+        update server_role set status=#{status} where id=#{rid}
+    </update>
+    <delete id="deleteFucntionToAccount">
+        delete from server_user_function where user_id=#{id}
+    </delete>
+    <delete id="deleteButtonToAccount">
+        delete from server_user_button where user_id=#{id}
+    </delete>
+    <delete id="deleteFunctionToRole">
+        delete from server_role_function where role_id=#{id}
+    </delete>
+    <delete id="deleteButtonToRole">
+        delete from server_role_button where role_id=#{id}
+    </delete>
+
+    <select id="findAccountByUsername"
+            resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SAccount.Beans.Account">
+        select id,username,password,true_name,phone_num,role_id,created_time from server_user where username=#{username} and status = 1
+    </select>
+    <select id="findRoleByName"
+            resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SAccount.Beans.Role">
+        select id,role_name,created_time from server_role where role_name=#{roleName} and status = 1
+    </select>
+    <select id="findAllAccount"
+            resultMap="accounts">
+        select DISTINCT s.id,s.username,s.true_name,s.phone_num,s.role_id,s.created_time,sr.role_name
+
+        from server_user s
+
+        LEFT JOIN server_role sr on s.role_id=sr.id and sr.status = 1
+
+        LEFT JOIN server_user_function suf on suf.user_id = s.id
+
+        LEFT JOIN server_function sf1 on sf1.parent_id is NULL and sf1.status = 1
+
+        LEFT JOIN server_function sf2 on sf2.parent_id is not null and sf2.parent_id = sf1.id and  sf2.status = 1
+
+        LEFT JOIN server_user_button sub on sub.user_id = s.id
+
+        LEFT JOIN server_button sb on sb.id=sub.button_id and sb.status = 1
+
+        where s.status = 1
+
+        <if test="search != null and search != ''">
+            and (s.username like concat('%',#{search},'%')
+
+            or s.true_name like concat('%',#{search},'%')
+
+            or s.phone_num like concat('%',#{search},'%')
+
+            or sr.role_name like concat('%',#{search},'%')
+
+            or sf1.function_name like concat('%',#{search},'%')
+
+            or sf2.function_name like concat('%',#{search},'%')
+
+            or sb.name like concat('%',#{search},'%')
+            )
+        </if>
+    </select>
+
+    <select id="findAccountFB"
+           resultMap="functionss">
+    select DISTINCT sf1.function_name as pfName,sf2.id as fid,sf2.function_name as fname,sf2.created_time as fcreatedtime,sb.id as bid,sb.`name` as bname,sb.alias as balias
+
+    from server_function sf1,server_function sf2,server_user_button sub,server_function_button sfb,server_button sb
+
+    where sf1.id=sf2.parent_id and sub.user_id=#{uid} and sfb.function_id = sf2.id and
+
+    sb.id=sfb.button_id and sb.id=sub.button_id and sf1.parent_id is null and sf2.parent_id is not null
+
+    ORDER BY sf1.order_num,sf2.order_num asc
+    </select>
+    <select id="findAllRole"
+                resultMap="roles">
+        select DISTINCT sr.id as rid,sr.role_name as rname,sr.created_time as rcreatedtime
+
+        from server_role sr
+
+        LEFT JOIN server_role_function srf on sr.id=srf.role_id
+
+        LEFT JOIN server_function sf1 on sf1.parent_id is null
+
+        LEFT JOIN server_function sf2 on sf2.parent_id is not null and sf2.parent_id=sf1.id
+
+        LEFT JOIN server_function_button sfb on sfb.function_id = sf2.id
+
+        LEFT JOIN server_button sb on sb.id=sfb.button_id
+
+        where sr.`status` = 1 and sf1.status = 1 and sf2.`status` = 1
+
+       <if test="search != null and search != ''">
+           and (sr.role_name like concat('%',#{search},'%') or sf2.function_name like concat('%',#{search},'%') or sb.name like concat('%',#{search},'%'))
+       </if>
+    </select>
+
+    <select id="findFunctionByRoleId"
+            resultMap="parentFunctions">
+        select DISTINCT sf1.function_name as pfname,sf2.id as fid,sf2.function_name as fname,sf2.created_time as fcreatedtime,
+
+        sb.id as bid,sb.name as bname,sb.alias as balias
+
+        from server_role_function srf,server_function sf1,server_function sf2,server_function_button sfb,server_role_button srb,server_button sb
+
+        where srf.role_id=#{rid} and sf1.parent_id is null and sf2.parent_id is not null and sf1.id=sf2.parent_id and srf.function_id = sf2.id and sfb.function_id = sf2.id
+
+        and srb.role_id=srf.role_id and srb.button_id = sfb.button_id and sb.id=srb.button_id and sb.id=sfb.button_id  and  sf1.status = 1 and sf2.status = 1 and srf.function_id=sfb.function_id
+
+        ORDER BY sf1.order_num,sf2.order_num asc
+    </select>
+    <select id="findAllFB"
+            resultMap="functionss">
+
+  select DISTINCT sf1.function_name as pfName,sf2.id as fid,sf2.function_name as fname,sf2.created_time as fcreatedtime,sb.id as bid,sb.name as bname,sb.alias as balias
+
+        from server_function sf1
+
+        LEFT JOIN server_function sf2 on sf1.id=sf2.parent_id
+
+        LEFT JOIN server_function_button sfb on sfb.function_id=sf2.id
+
+        LEFT JOIN server_button sb on sb.id=sfb.button_id and sb.status = 1
+
+        where sf1.parent_id is null and sf2.parent_id is not null and sf1.`status` = 1 and sf2.`status` = 1
+
+        ORDER BY sf1.order_num,sf2.order_num asc
+    </select>
+    <select id="findFunctionIdByUid" resultType="java.lang.String">
+        select * from server_user_function where user_id=#{uid}
+    </select>
+    <select id="findFunctionIdsByRId" resultType="java.lang.String">
+        select function_id from server_role_function where role_id=#{id}
+    </select>
+    <select id="findFBByRoleId"
+            resultMap="functionss">
+        select sf1.function_name as pfName,sf2.id as fid,sf2.function_name as fname,sf2.created_time as fcreatedtime,sb.id as bid,sb.`name` as bname,sb.alias as balias
+
+from server_role sr,server_function sf1,server_function sf2,server_role_function srf,server_button sb,server_role_button srb,server_function_button sfb
+
+where sr.id=#{id} and sr.id=srf.role_id and srf.function_id=sf2.id and sf1.parent_id is null and sf2.parent_id is not null and sf1.id=sf2.parent_id
+
+and sb.id=srb.button_id and sr.id=srb.role_id and sf2.id=sfb.function_id and sb.id=sfb.button_id
+
+ORDER BY sf1.order_num,sf2.order_num asc
+
+ </select>
+    <select id="findAccountByPhoneNum"
+            resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SAccount.Beans.Account">
+        select id, username, true_name, phone_num, created_time from server_user where phone_num=#{phoneNum} and status = 1
+    </select>
+    <select id="findAccountByRid"
+            resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SAccount.Beans.Account">
+
+        select id, username, password, true_name, phone_num, role_id, created_time
+
+        from server_user where role_id=#{rid} and status = 1
+    </select>
+    <select id="findAccountPower"
+            resultMap="power">
+    select DISTINCT sf1.function_url as pfurl,sf1.function_name as pfname,sf2.function_url furl,sf2.function_name as fname,sb.alias as balias
+
+    from server_user_function suf
+
+    LEFT JOIN server_function sf1 on sf1.parent_id is NULL and sf1.status = 1
+
+    LEFT JOIN server_function sf2 on sf2.parent_id is not null and sf2.status = 1  and suf.function_id = sf2.id
+
+    LEFT JOIN server_user_button sub on sub.user_id = suf.user_id
+
+    LEFT JOIN server_function_button sfb on sfb.function_id = sf2.id and sfb.button_id = sub.button_id
+
+    LEFT JOIN server_button sb on sb.id=sub.button_id and sb.status = 1 and sb.id=sfb.button_id
+
+    where suf.user_id=#{uid} and sf1.id=sf2.parent_id
+
+    ORDER BY sf1.order_num,sf2.order_num asc
+    </select>
+    <select id="findRoleNameById" resultType="java.lang.String">
+        select role_name from server_role where id = #{roleId} and status = 1
+    </select>
+    <select id="findFids" resultType="java.lang.String">
+        select id from server_function where status = 1 and parent_id is not null
+    </select>
+    <select id="findBids" resultType="java.lang.String">
+        select id from server_button where status = 1
+    </select>
+    <select id="findButtonUrlById" resultType="java.lang.String">
+        select sb.url from server_button sb,server_user_button sub
+        where sb.status = 1 and sub.user_id = #{id} and sub.button_id=sb.id
+    </select>
+    <select id="findAccountById" resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SAccount.Beans.Account">
+        select id, username, password, true_name, phone_num, role_id, created_time from server_user where id=#{uid} and status = 1
+    </select>
+    <select id="findDoctorByUid" resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SHealth.Beans.Doctor">
+        select d.*
+
+        from server_user_doctor sud,doctor d
+
+        where d.status = 1 and sud.server_user_id=#{id} and d.id=sud.doctor_id
+    </select>
+    <insert id="addAccountDoctor">
+        insert into server_user_doctor (server_user_id, doctor_id) values
+        <foreach collection="dids" item="item" separator=",">
+            (#{uid},#{item})
+        </foreach>
+    </insert>
+    <delete id="deleteDoctorToAccount">
+        delete from server_user_doctor where server_user_id=#{id}
+    </delete>
+    <select id="findDoctorIdByUid" resultType="java.lang.String">
+        select doctor_id from server_user_doctor where server_user_id=#{uid}
+    </select>
+
+</mapper>

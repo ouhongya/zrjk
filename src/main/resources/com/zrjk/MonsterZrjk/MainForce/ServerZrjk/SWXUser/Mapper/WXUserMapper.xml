@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SWXUser.Mapper.WXUserMapper">
+
+    <select id="findWXUser" resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SWXUser.Beans.User">
+        select id, nick_name, cover_url, wx_key, phone_num, created_time from user where status = 1
+
+        <if test="search != null and search != ''">
+            and nick_name like concat('%',#{search},'%')
+        </if>
+    </select>
+    <select id="findFollowHealthThme"
+            resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SHealth.Beans.HealthTheme">
+        select id, name, url, created_time
+
+        from health_theme where status= 1 and id in (select health_theme_id from follow_user_health_theme where user_id=#{uid})
+
+        <if test="search != null and search != ''">
+            and name like concat('%',#{search},'%')
+        </if>
+    </select>
+    <select id="findFollowArticle"
+            resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SHealth.Beans.Article">
+        select id, name, url, doctor_name, department, health_theme_id, created_time
+
+        from health_theme_article where status = 1 and id in (select health_theme_article_id from follow_user_health_theme_article where user_id=#{uid})
+
+        <if test="search != null and search != ''">
+           and name like concat('%',#{search},'%')
+        </if>
+    </select>
+    <select id="findFollowVideo" resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SHealth.Beans.Video">
+        select id, name, url, introduce, duration, department, cover_url, doctor_name, health_theme_id, created_time
+
+        from health_theme_video where status = 1 and id in (select health_theme_video_id from follow_user_health_theme_video where user_id=#{uid})
+
+        <if test="search != null and search != ''">
+           and name like concat('%',#{search},'%')
+        </if>
+    </select>
+    <select id="findFollowDoctor" resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SHealth.Beans.Doctor">
+        select id, name, url, hospital_name, adept_disease, introduce, address, health_theme_id, created_time
+
+        from doctor where status = 1 and id in (select doctor_id from follow_user_doctor where user_id=#{uid})
+
+        <if test="search != null and search != ''">
+            and name like concat('%',#{search},'%')
+        </if>
+    </select>
+    <select id="findColumnByName" resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SWXUser.Beans.Column">
+            select id, name, created_time from user_column where status = 1 and name=#{name}
+    </select>
+    <insert id="addColumn">
+        insert into user_column(id, name, created_time) values (#{id},#{name},#{date})
+    </insert>
+    <select id="findAllColumn" resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SWXUser.Beans.Column">
+        select id, name, created_time from user_column where status=1 order by created_time asc
+    </select>
+    <select id="findColumnContent" resultType="java.lang.String">
+        select content from user_column_content where user_id=#{uid} and column_id=#{cid}
+    </select>
+    <insert id="addColumnContent">
+        insert into user_column_content(id, column_id, user_id, content, created_time) values (#{id},#{cid},#{uid},#{content},#{date})
+    </insert>
+    <update id="updateColumContent">
+        update user_column_content set content=#{content} where column_id=#{cid} and user_id=#{uid}
+    </update>
+    <select id="findColumnAndContentByUid"
+            resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SWXUser.Beans.Column">
+        select uc.id,uc.name,uc.created_time,ucc.content
+
+        from user_column uc
+
+        left join user_column_content ucc on uc.id=ucc.column_id and ucc.user_id=#{uid}
+
+        where uc.status = 1
+
+        order by uc.created_time asc
+    </select>
+    <update id="updateColumnStatus">
+        update user_column set status=#{status} where id=#{cid}
+    </update>
+    <update id="updateColumn">
+        update user_column set name=#{name} where id=#{id}
+    </update>
+</mapper>

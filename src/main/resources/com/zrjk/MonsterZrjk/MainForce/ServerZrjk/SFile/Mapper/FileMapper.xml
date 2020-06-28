@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SFile.Mapper.FileMapper">
+
+    <insert id="addFolder">
+        insert into server_folder(id, folder_name, parent_id, created_time) values (#{id},#{folderName},#{parentId},#{createdTime})
+    </insert>
+    <select id="findFolderById" resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SFile.Beans.Folder">
+        select DISTINCT s1.*,s2.folder_name as parentName
+
+        from server_folder s1
+
+        LEFT JOIN server_folder s2 on s1.parent_id=s2.id and s2.`status` = 1
+
+        where s1.`status` = 1 and s1.id=#{folderId}
+    </select>
+
+    <insert id="addFile">
+        insert into server_file (id, file_name, look_file_name, folder_id, look_url, down_url, created_time) values (#{id},#{fileName},#{lookFileName},#{folderId},#{lookUrl},#{downUrl},#{createdTime})
+    </insert>
+    <select id="findFileById" resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SFile.Beans.File">
+        select id, file_name, look_file_name, folder_id, look_url, down_url, created_time from server_file where status = 1 and id=#{id}
+    </select>
+    <update id="updateFolderStatus">
+        update server_folder set status = #{status} where id=#{id}
+    </update>
+    <update id="updateFileStatus">
+        update server_file set status=#{status} where id=#{id}
+    </update>
+    <select id="findFolderByParentId"
+            resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SFile.Beans.Folder">
+        select id, folder_name, parent_id, created_time from server_folder where parent_id=#{folderParentId} and status = 1
+
+        <if test="search != null and search != ''">
+            and (folder_name like "%"#{search}"%")
+        </if>
+
+        order by created_time desc
+    </select>
+
+    <select id="findFileByFolderId" resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SFile.Beans.File">
+        select id, file_name, look_file_name, folder_id, look_url, down_url, created_time from server_file where folder_id=#{folderId} and status = 1
+
+        <if test="search != null and search != ''">
+            and (file_name like "%"#{search}"%")
+        </if>
+    </select>
+    <insert id="addJournal">
+        insert into server_journal (id, user_id, file_id, types, created_time) values (#{id},#{userId},#{fid},#{types},#{createdTime})
+    </insert>
+    <select id="findJournal" resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SFile.Beans.Journal">
+        select id, user_id, file_id as Fid, types, created_time from server_journal where status=1
+    </select>
+    <select id="findFileByIdToJournal" resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SFile.Beans.File">
+        select id, file_name, look_file_name, folder_id, look_url, down_url, created_time from server_file where id=#{id}
+    </select>
+    <select id="findFolderByIdToJournal"
+            resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SFile.Beans.Folder">
+        select DISTINCT s1.*,s2.folder_name as parentName
+
+        from server_folder s1
+
+        LEFT JOIN server_folder s2 on s1.parent_id=s2.id
+
+        where s1.id=#{folderId}
+
+        order by created_time desc
+    </select>
+
+</mapper>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SDatacenter.Mapper.DataCenterMapper">
+    <resultMap id="datadoctor" type="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SDatacenter.Beans.DataDoctor">
+        <result property="doctor.id" column="id"></result>
+        <result property="doctor.createdTime" column="created_time"></result>
+        <result property="doctor.name" column="name"></result>
+        <result property="doctor.address" column="address"></result>
+        <result property="doctor.adeptDisease" column="adept_disease"></result>
+        <result property="doctor.healthThemeId" column="health_theme_id"></result>
+        <result property="doctor.hospitalName" column="hospital_name"></result>
+        <result property="doctor.introduce" column="introduce"></result>
+        <result property="doctor.url" column="url"></result>
+        <result property="num" column="num"></result>
+    </resultMap>
+    <resultMap id="dataarticle" type="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SDatacenter.Beans.DataArticle">
+        <result property="article.id" column="id"></result>
+        <result property="article.name" column="name"></result>
+        <result property="article.url" column="url"></result>
+        <result property="article.healthThemeId" column="health_theme_id"></result>
+        <result property="article.createdTime" column="created_time"></result>
+        <result property="article.department" column="department"></result>
+        <result property="article.doctorName" column="doctor_name"></result>
+        <result property="article.status" column="status"></result>
+        <result property="num" column="num"></result>
+    </resultMap>
+    <resultMap id="datavideo" type="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SDatacenter.Beans.DataVideo">
+        <result property="video.id" column="id"></result>
+        <result property="video.name" column="name"></result>
+        <result property="video.status" column="status"></result>
+        <result property="video.doctorName" column="doctor_name"></result>
+        <result property="video.department" column="department"></result>
+        <result property="video.createdTime" column="created_time"></result>
+        <result property="video.healthThemeId" column="health_theme_id"></result>
+        <result property="video.url" column="url"></result>
+        <result property="video.introduce" column="introduce"></result>
+        <result property="video.coverUrl" column="cover_url"></result>
+        <result property="num" column="num"></result>
+    </resultMap>
+
+    <resultMap id="datahealththeme" type="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SDatacenter.Beans.DataHealthTheme">
+        <result property="healthTheme.id" column="id"></result>
+        <result property="healthTheme.url" column="url"></result>
+        <result property="healthTheme.createdTime" column="created_time"></result>
+        <result property="healthTheme.name" column="name"></result>
+        <result property="num" column="num"></result>
+    </resultMap>
+    <select id="findDataDoctor" resultMap="datadoctor">
+        select d.*, COUNT(fd.user_id) as num
+
+        from doctor d
+
+        LEFT JOIN follow_user_doctor fd on d.id=fd.doctor_id
+
+        where d.`status`=1
+
+        <if test="search != null and search != ''">
+            and (name like "%"#{search}"%" or hospital_name like "%"#{search}"%" or adept_disease like "%"#{search}"%" or introduce like "%"#{search}"%" or address like "%"#{search}"%")
+        </if>
+
+        GROUP BY d.id
+
+        ORDER BY num desc
+    </select>
+    <select id="findDataArticle"
+            resultMap="dataarticle">
+        select h.*,COUNT(fh.user_id) as num
+
+        from health_theme_article h
+
+        LEFT JOIN follow_user_health_theme_article fh on h.id=fh.health_theme_article_id
+
+        where h.`status`!=-1
+
+        <if test="search != null and search != ''">
+            and name like "%"#{search}"%"
+        </if>
+
+        GROUP BY h.id
+
+        ORDER BY num desc
+    </select>
+    <select id="findDataVideo"
+            resultMap="datavideo">
+        select h.*, count(fh.user_id) as num
+
+        from health_theme_video h
+
+        LEFT JOIN follow_user_health_theme_video fh on h.id=fh.health_theme_video_id
+
+        where h.`status`!=-1
+
+        <if test="search != null and search != ''">
+            and h.name like "%"#{search}"%"
+        </if>
+
+        group by h.id
+
+        order by num desc
+
+
+    </select>
+    <select id="findDataHealthTheme"
+             resultMap="datahealththeme">
+        select h.*,count(fh.user_id) as num
+
+        from health_theme h
+
+        LEFT JOIN follow_user_health_theme fh on h.id=fh.health_theme_id
+
+        where h.`status`=1
+
+        <if test="search != null and search != ''">
+            and name like "%"#{search}"%"
+        </if>
+
+        group by h.id
+
+        order by num desc
+    </select>
+</mapper>

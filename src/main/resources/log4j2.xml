@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration status="DEBUG">
+    <properties>
+        <property name="path" >loggs</property>
+    </properties>
+
+    <!--先定义所有的appender-->
+    <appenders>
+        <!--这个输出控制台的配置-->
+        <console name="Console" target="SYSTEM_OUT">
+            <!--输出日志的格式-->
+            <PatternLayout pattern="%d{HH:mm:ss-SSS} %p - %l - %m%n"/>
+        </console>
+
+
+        <RollingFile name="RollingFileDebug" fileName="${path}/logDebug/debug.log" filePattern="${path}/logDebug/%d{yyyy-MM-dd}-debug.log.gz">
+            <Filters>
+                <!--控制台只输出INFO级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
+                <ThresholdFilter level="INFO" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
+
+            </Filters>
+            <PatternLayout pattern="[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n"/>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${path}/logDebug">
+                    <!-- glob 项为需要自动清理日志的pattern -->
+                    <IfFileName glob="*.log.gz"/>
+                    <!-- 7d 表示自动清理掉7天以前的日志文件 -->
+                    <IfLastModified age="30d"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+            <Policies>
+                <TimeBasedTriggeringPolicy  interval="1"/>
+            </Policies>
+            <DefaultRolloverStrategy max="40"/>
+        </RollingFile>
+        <!-- 这个会打印出所有的info及以下级别的信息-->
+        <RollingFile name="RollingFileInfo" fileName="${path}/logInfo/info.log" filePattern="${path}/logInfo/%d{yyyy-MM-dd}-info.log.gz">
+
+            <Filters>
+                <!--控制台只输出INFO级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
+                <ThresholdFilter level="WARN" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <PatternLayout pattern="[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n"/>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${path}/logInfo">
+                    <!-- glob 项为需要自动清理日志的pattern -->
+                    <IfFileName glob="*.log.gz"/>
+                    <!-- 7d 表示自动清理掉7天以前的日志文件 -->
+                    <IfLastModified age="30d"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+
+            <Policies>
+                <TimeBasedTriggeringPolicy  interval="1"/>
+            </Policies>
+            <DefaultRolloverStrategy max="40"/>
+        </RollingFile>
+
+        <RollingFile name="RollingFileWarn" fileName="${path}/logWarn/warn.log" filePattern="${path}/logWarn/%d{yyyy-MM-dd}-warn.log.gz">
+            <Filters>
+                <ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="WARN" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <PatternLayout pattern="[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n"/>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${path}/logWarn">
+                    <!-- glob 项为需要自动清理日志的pattern -->
+                    <IfFileName glob="*.log.gz"/>
+                    <!-- 7d 表示自动清理掉7天以前的日志文件 -->
+                    <IfLastModified age="30d"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+            <!-- DefaultRolloverStrategy属性如不设置，则默认为最多同一文件夹下7个文件，这里设置了20 -->
+            <DefaultRolloverStrategy max="40"/>
+        </RollingFile>
+
+        <RollingFile name="RollingFileError" fileName="${path}/logError/error.log" filePattern="${path}/logError/%d{yyyy-MM-dd}-error.log.gz">
+            <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n"/>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${path}/logError">
+                    <!-- glob 项为需要自动清理日志的pattern -->
+                    <IfFileName glob="*.log.gz"/>
+                    <!-- 7d 表示自动清理掉7天以前的日志文件 -->
+                    <IfLastModified age="30d"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+            <Policies>
+                <TimeBasedTriggeringPolicy  interval="1"/>
+            </Policies>
+            <DefaultRolloverStrategy max="40"/>
+        </RollingFile>
+
+    </appenders>
+    <!--然后定义logger，只有定义了logger并引入的appender，appender才会生效-->
+    <loggers>
+        <root level="all">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="RollingFileInfo"/>
+            <appender-ref ref="RollingFileWarn"/>
+            <appender-ref ref="RollingFileError"/>
+            <appender-ref ref="RollingFileDebug"/>
+        </root>
+    </loggers>
+
+</configuration>
+
+
+
+

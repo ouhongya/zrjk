@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SHealth.Mapper.HealthMapper">
+
+    <select id="findHealthThemeByName"
+            resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SHealth.Beans.HealthTheme">
+    select id, name, url, created_time from health_theme where status = 1 and name=#{name}
+    </select>
+    <insert id="addThealthTheme">
+        insert into health_theme(id, name, url, created_time) values (#{id},#{name},#{url},#{createdTime})
+    </insert>
+    <update id="updateHealthTheme">
+        update health_theme set name=#{name},url=#{url} where id=#{id}
+    </update>
+    <update id="updateHealthThemeStatus">
+        update health_theme set status = #{status} where id=#{id}
+    </update>
+    <select id="findAllHealthTheme"
+            resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SHealth.Beans.HealthTheme">
+        select id, name, url, created_time from health_theme where status = 1
+
+        <if test="search != null and search != ''">
+            and name like "%"#{search}"%"
+        </if>
+    </select>
+    <select id="findArtcleByName" resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SHealth.Beans.Article">
+        select id, name, url, content,health_theme_id,created_time from health_theme_article where name=#{name} and status!= -1
+    </select>
+    <insert id="addArtcle">
+        insert into health_theme_article(id, name, url, content, health_theme_id, created_time,doctor_name,department) values (#{id},#{name},#{url},#{content},#{healthThemeId},#{createdTime},#{doctorName},#{department})
+    </insert>
+    <update id="updateArtcle">
+        update health_theme_article set name=#{name},url=#{url},doctor_name=#{doctorName},department=#{department},content=#{content} where id=#{id}
+    </update>
+    <update id="updateArtcleStatus">
+        update health_theme_article set status=#{status} where id=#{id}
+    </update>
+    <select id="findArtcle" resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SHealth.Beans.Article">
+        select ha.id, ha.name, ha.url, ha.health_theme_id, ha.created_time,ha.doctor_name,ha.department,ha.status,h.name as healthThemeName from health_theme_article ha,health_theme h
+
+        where ha.health_theme_id=#{healthThemeId} and ha.status!= -1 and h.status=1 and h.id=ha.health_theme_id
+
+        <if test="search != null and search != ''">
+            and (ha.name like concat('%',#{search},'%') or h.name like concat('%',#{search},'%'))
+        </if>
+    </select>
+    <select id="findVideoByName" resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SHealth.Beans.Video">
+        select id, name, url, introduce, health_theme_id, created_time from health_theme_video where name=#{name} and status != -1
+    </select>
+    <insert id="addVideo">
+        insert into health_theme_video(id, name, url, introduce, health_theme_id, created_time,doctor_name,department,cover_url) values (#{id},#{name},#{url},#{introduce},#{healthThemeId},#{createdTime},#{doctorName},#{department},#{coverUrl})
+    </insert>
+    <update id="updateVideoStatus">
+        update health_theme_video set status=#{status} where id=#{id}
+    </update>
+    <update id="deleteVideo">
+        update health_theme_video set status=-1 where id=#{id} and status = 0
+    </update>
+    <update id="deleteArtcle">
+        update health_theme_article set status=-1 where id=#{id} and status=0
+    </update>
+    <select id="findVideo" resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SHealth.Beans.Video">
+        select hv.id, hv.name, hv.url, hv.health_theme_id,hv.cover_url,hv.created_time,hv.status,hv.doctor_name,hv.department,h.name as healthThemeName
+
+        from health_theme_video hv,health_theme h
+
+        where hv.health_theme_id=#{healthThemeId} and hv.status!=-1 and h.status=1 and hv.health_theme_id=h.id
+
+        <if test="search != null and search != ''">
+            and (hv.name like concat('%',#{search},'%') or h.name like concat('%',#{search},'%'))
+        </if>
+    </select>
+    <select id="findArtcleById" resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SHealth.Beans.Article">
+        select id, name, url, content, doctor_name, department, health_theme_id, created_time, status from health_theme_article where id=#{id} and status!=-1
+    </select>
+    <update id="updateVideo">
+        update health_theme_video set name=#{name},url=#{url},introduce=#{introduce},doctor_name=#{doctorName},department=#{department},cover_url=#{coverUrl}  where id=#{id}
+    </update>
+    <select id="findVideoById" resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SHealth.Beans.Video">
+        select id, name, url, introduce,cover_url,department, doctor_name, health_theme_id, created_time,status from health_theme_video where id=#{id} and status!=-1
+    </select>
+    <select id="findAllArtcle" resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SHealth.Beans.Article">
+        select ha.id, ha.name, ha.url, ha.doctor_name, ha.department,ha.health_theme_id, ha.created_time, ha.status,h.name as healthThemeName from health_theme_article ha,health_theme h
+
+        where h.status=1 and ha.status!=-1 and h.id=ha.health_theme_id
+
+        <if test="search != null and search != ''">
+            and (ha.name like concat('%',#{search},'%') or h.name like concat('%',#{search},'%'))
+        </if>
+    </select>
+    <select id="findAllVideo" resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SHealth.Beans.Video">
+        select hv.id, hv.name, hv.url, hv.department,hv.cover_url,hv.doctor_name, hv.health_theme_id, hv.created_time, hv.status ,h.name as healthThemeName
+
+        from health_theme_video hv,health_theme h
+
+        where hv.status!=-1 and h.status=1 and hv.health_theme_id=h.id
+
+        <if test="search != null and search != ''">
+            and (hv.name like concat('%',#{search},'%') or h.name like concat('%',#{search},'%'))
+        </if>
+    </select>
+    <insert id="addDoctor">
+        insert into doctor(id, name, url, hospital_name, adept_disease, introduce, address, health_theme_id, created_time)
+
+        values (#{id},#{name},#{url},#{hospitalName},#{adeptDisease},#{introduce},#{address},#{healthThemeId},#{createdTime})
+    </insert>
+    <update id="updateDoctor">
+        update doctor set name=#{name},url=#{url},hospital_name=#{hospitalName},adept_disease=#{adeptDisease},introduce=#{introduce},address=#{address},health_theme_id=#{healthThemeId} where id=#{id}
+    </update>
+    <update id="updateDoctorStatus">
+        update doctor set status=#{status} where id=#{id}
+    </update>
+    <select id="findAllDoctor" resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SHealth.Beans.Doctor">
+        select d.id, d.name, d.url, d.hospital_name, d.adept_disease, d.introduce, d.address, d.health_theme_id, d.created_time,h.name as healthThemeName from doctor d,health_theme h
+
+        where d.status=1 and h.status=1 and d.health_theme_id=h.id
+
+        <if test="search != null and search != ''">
+            and (d.name like concat('%',#{search},'%') or d.hospital_name like concat('%',#{search},'%') or d.adept_disease like concat('%',#{search},'%') or d.introduce like concat('%',#{search},'%') or d.address like concat('%',#{search},'%') or h.name like concat('%',#{search},'%'))
+        </if>
+    </select>
+    <select id="findDoctor" resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SHealth.Beans.Doctor">
+        select d.id, d.name, d.url, d.hospital_name, d.adept_disease, d.introduce, d.address, d.health_theme_id, d.created_time,h.name as healthThemeName from doctor d,health_theme h
+
+        where d.health_theme_id=#{healthThemeId} and d.status = 1 and d.health_theme_id=h.id
+
+        <if test="search != null and search != ''">
+            and (d.name like concat('%',#{search},'%') or d.hospital_name like concat('%',#{search},'%') or d.adept_disease like concat('%',#{search},'%') or d.introduce like concat('%',#{search},'%') or d.address like concat('%',#{search},'%') or h.name like concat('%',#{search},'%'))
+        </if>
+    </select>
+    <select id="findDoctorById" resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SHealth.Beans.Doctor">
+        select id, name, url, hospital_name, adept_disease, introduce, address, health_theme_id, created_time from doctor where id=#{id} and status = 1
+    </select>
+    <select id="findQuestions" resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SHealth.Beans.Questions">
+        select q.id, q.questions_content, q.user_id, q.doctor_id, q.health_theme_name, q.doctor_name, q.created_time,u.nick_name as nickName
+
+        from questions q,user u
+
+        where q.status = 1 and u.`status` = 1 and q.user_id=u.id and q.doctor_id in (select server_user_doctor.doctor_id from server_user_doctor where server_user_id=#{uid})
+
+        <if test="search != null and search != ''">
+            and q.questions_content like "%"#{search}"%"
+        </if>
+    </select>
+    <insert id="addAnswer">
+        insert into answer(id, answers_content, questions_id, created_time) values (#{id},#{answersContent},#{questionsId},#{createdTime})
+    </insert>
+    <select id="findAnswerByQid" resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SHealth.Beans.Answer">
+        select id, answers_content, questions_id, created_time from answer where status = 1 and questions_id=#{qid} order by created_time asc
+    </select>
+    <update id="updateAnswerStatus">
+        update answer set status=#{status} where id=#{id}
+    </update>
+    <update id="updateAnswer">
+        update answer set answers_content=#{answersContent} where id=#{id}
+    </update>
+    <select id="findAnswerById" resultType="com.zrjk.MonsterZrjk.MainForce.ServerZrjk.SHealth.Beans.Answer">
+        select id, answers_content, questions_id, created_time from answer where id=#{id} and status = 1
+    </select>
+
+</mapper>

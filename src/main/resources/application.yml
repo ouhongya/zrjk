@@ -1,0 +1,41 @@
+server:
+  port: 8889
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 123456
+    url: jdbc:mysql://118.24.156.201:7306/zrjk?useSSL=false&serverTimezone=GMT%2B8&characterEncoding=utf8&useAffectedRows=true
+    type: com.alibaba.druid.pool.DruidDataSource
+  servlet:
+    multipart:
+      max-file-size: 2000MB
+      max-request-size: 10000MB
+mybatis:
+  mapperLocations: classpath:com/zrjk/MonsterZrjk/MainForce/*/*/Mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+#token密钥
+tokenKey: 来左边跟我一起画个龙，在你右边画一道彩虹
+#后台token过期时间   单位：毫秒
+tokenTime: 10800000
+#腾讯云 secretId
+secretId: AKID8OURAfIte2ED2lpwLm59wA91h8KInYdV
+#腾讯云 secretKey
+secretKey: kW5RbXEXfaGhtsdLq6C5jEXcS7YlkU4S
+#腾讯云对象存储 AO使用的存储桶名称
+bucketName: wdnmd-1300857723
+#基本使用的存储桶名称
+bucketNameT: hhh-1300857723
+#腾讯云指定的地区缩写
+area: ap-chengdu
+#文件管理id
+fileId: 6FB6580657D349E989CBBBD2E533F4B2
+#视频管理id
+videoId: 50608852EE6E4B94A2EFE9E8A2036150
+#图片管理id
+pictureId: 8780099E4D9544ABBF562C7B7216E32F
+#特殊权限id
+powerId: 19D0B6756A4E4E94A343A092B4666CBE
